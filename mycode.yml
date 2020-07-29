@@ -1,0 +1,57 @@
+---
+- name: configuring maven and tomcat
+  hosts: all
+  become: true
+  become_method: sudo
+  vars:
+    - version: 8.5.56
+  tasks:
+    - name: install java
+      yum:
+        name: java-1.8.0-openjdk-devel
+        state: latest
+    - name: Create a directory for tomcat8.5
+      file:
+        path: /root/tomcat8.5
+        state: directory
+        mode: '0755'
+    - name: tomcat extract
+      unarchive:
+        src: http://www-eu.apache.org/dist/tomcat/tomcat-8/v{{version}}/bin/apache-tomcat-{{version}}.tar.gz
+        dest: /root/tomcat8.5
+        remote_src: yes
+        extra_opts: [--strip-components=1] 
+    - name: modify port to 80 from 8080
+      replace:
+        path: /root/tomcat8.5/conf/server.xml
+        regexp: '8080'
+        replace: '80'
+    - name: Remove line
+      lineinfile:
+        path: /root/tomcat8.5/webapps/manager/META-INF/context.xml
+        state: absent
+        regexp: '<Valve className="org.apache.catalina.valves.RemoteAddrValve"'
+    - name: remove line2
+      lineinfile:
+        path: /root/tomcat8.5/webapps/manager/META-INF/context.xml
+        state: absent
+        regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'      
+    - name: configuring users
+      blockinfile:
+        dest: /root/tomcat8.5/conf/tomcat-users.xml
+        block: |
+          <role rolename="manager-gui"/>
+          <role rolename="manager-script"/>
+          <user username="sumanth" password="sumanth" roles="manager-gui,manager-script"/>
+        insertbefore: "</tomcat-users>"
+    - name: stop tomcat
+      command: nohup /root/tomcat8.5/bin/shutdown.sh 
+    - name: sleep
+      command: sleep 3s
+    - name: ==> startup tomcat
+      command: nohup /root/tomcat8.5/bin/startup.sh
+       
+      
+    
+         
+         
