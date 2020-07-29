@@ -1,7 +1,6 @@
 ---
 - name: configuring maven and tomcat
   hosts: all
-  become: true
   vars:
     - version: 8.5.56
   tasks:
