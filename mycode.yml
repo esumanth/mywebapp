@@ -25,24 +25,16 @@
         path: /root/tomcat8.5/conf/server.xml
         regexp: '8080'
         replace: '80'
-    - name: Remove line
-      lineinfile:
-        path: /root/tomcat8.5/webapps/manager/META-INF/context.xml
-        state: absent
-        regexp: '<Valve className="org.apache.catalina.valves.RemoteAddrValve"'
-    - name: remove line2
-      lineinfile:
-        path: /root/tomcat8.5/webapps/manager/META-INF/context.xml
-        state: absent
-        regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'      
+    - name: replace context.xml file
+      template:
+        src: ./context.xml
+        dest: /root/tomcat8.5/webapps/manager/META-INF/
+        force: yes      
     - name: configuring users
-      blockinfile:
-        dest: /root/tomcat8.5/conf/tomcat-users.xml
-        block: |
-          <role rolename="manager-gui"/>
-          <role rolename="manager-script"/>
-          <user username="sumanth" password="sumanth" roles="manager-gui,manager-script"/>
-        insertbefore: "</tomcat-users>"
+      template:
+        src: ./tomcat-users.xml
+        dest: /root/tomcat8.5/conf/tomcat-user.xml
+        force: yes 
     - name: stop tomcat
       command: nohup /root/tomcat8.5/bin/shutdown.sh 
     - name: sleep
