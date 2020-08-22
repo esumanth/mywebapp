@@ -33,7 +33,7 @@
     - name: configuring users
       template:
         src: ./tomcat-users.xml
-        dest: /root/tomcat8.5/conf/tomcat-user.xml
+        dest: /root/tomcat8.5/conf/tomcat-users.xml
         force: yes 
     - name: stop tomcat
       command: nohup /root/tomcat8.5/bin/shutdown.sh 
