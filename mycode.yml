@@ -28,7 +28,7 @@
     - name: replace context.xml file
       template:
         src: ./context.xml
-        dest: /root/tomcat8.5/webapps/host-manager/META-INF/
+        dest: /root/tomcat8.5/webapps/manager/META-INF/
         force: yes      
     - name: configuring users
       template:
